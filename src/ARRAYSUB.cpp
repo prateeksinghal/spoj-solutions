@@ -1,70 +1,58 @@
-#include <stdio.h>
-#include <math.h>
-#include <limits.h>
-#include <stdlib.h>
-#include<string.h>
-int minVal(int x, int y) { return (x < y)? x: y; }
-double maxVal(double x, double y) { return (x > y)? x: y; }
-int getMid(int s, int e) {  return s + (e -s)/2;  }
-int RMQUtil(int *st,int ss, int se, int qs, int qe, int index)
+#include<iostream>
+#include<limits.h>
+#include<algorithm>
+#define ll long long 
+using namespace std;
+/*
+
+size of segment tree = 2*2^(ciel(log2(n)))-1
+
+*/
+
+ll T[3000000];
+
+void update(ll node,ll s,ll e,ll id,ll value)
 {
-	if (qs <= ss && qe >= se)
-		return st[index];
-	if (se < qs || ss > qe)
-		return INT_MAX;
-	int mid = getMid(ss, se);
-	return minVal(RMQUtil( st,ss, mid, qs, qe, 2*index+1),
-			RMQUtil(st,mid+1, se, qs, qe, 2*index+2));
-}
-int RMQ(int *st,int n, int qs, int qe)
-{
-	return RMQUtil(st,0, n-1, qs, qe, 0);
-}
-int constructSTUtil(int arr[], int ss, int se, int *st, int si)
-{
-	if (ss == se)
+
+	if((id < s) || (id > e) || (s > e))
+		return;
+	
+	if(s==e)
 	{
-		st[si] = arr[ss];
-		return arr[ss];
+		T[node]=value;
+		return;	
 	}
-	int mid = getMid(ss, se);
-	st[si] =  minVal(constructSTUtil(arr, ss, mid, st, si*2+1),
-			constructSTUtil(arr, mid+1, se, st, si*2+2));
-	return st[si];
+	update(node*2,s,(s+e)/2,id,value);
+	update(node*2+1,(s+e)/2+1,e,id,value);
+
+	T[node]=min(T[node*2],T[node*2+1]);
 }
 
-int *constructST(int arr[], int n)
+
+ll query(ll node,ll s,ll e,ll S,ll E)
 {
-	int x = (int)(ceil((log(n)/log(2))));
-	int max_size = 2*(int)pow(2, x) - 1;
-	int *st = new int[max_size];
-	constructSTUtil(arr, 0, n-1, st, 0);
-	return st;
+	if((s > E) || (e < S) || (s > e))
+		return LONG_MAX;
+
+	if((s >= S) && (e <= E))
+		return T[node];
+
+	return min(query(node*2,s,(s+e)/2,S,E),query(node*2+1,(s+e)/2+1,e,S,E));
 }
 
 int main()
 {
-    int n,i,k,j,temp;
-    scanf("%d",&n);
-    int a[n];
-    int b[n];
-    for(i=0;i<n;i++)
-    {
-        scanf("%d",&a[i]);
-        b[i]=a[i]*-1;
-    }
-    int *st= constructST(b,n);
-    scanf("%d",&k);
-    for(i=0;i<=n-k;i++)
-    {
-        temp=RMQ(st,n,i,i+k-1)*-1;
-        if(i==n-k)
-            printf("%d",temp);
-        else
-            printf("%d ",temp);
-    }
-    return 0;
+	ll n,q,i,f,val,x,y,k;
+	cin >> n;
+	for(i=0;i<n;i++)
+	{
+		cin >> val;
+		val*=-1;
+		update(1,0,n-1,i,val);
+	}
+	cin >> k;
+	for(i=0;i<=n-k;i++)
+		cout << -1*query(1,0,n-1,i,i+k-1) << " ";
+	return 0;
 }
-
-
 
