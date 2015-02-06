@@ -101,19 +101,3 @@ int main()
 return 0;
 }
 
-/*int main(int argc,char *argv[])
-{
-    int test;
-    cin >> test;
-    while(test--){
-    Orienteering o;
-    o.main();
-    check[25][2] = {0, 0};
-    dist[25][25] = {0, 0};
-    mat[110][110] = {0, 0};
-    dx[] = {1,-1,0,0};
-    dy[] = {0,0,1,-1};
-    dp[1<<19][19] = {0, 0};
-}
-    return 0;
-}*/
